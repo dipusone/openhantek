@@ -357,9 +357,10 @@ void DataAnalyzer::run() {
 			double minimumCorrelation = correlation[0];
 			double peakCorrelation = 0;
 			unsigned int peakPosition = 0;
-			
+			double correlation_scale = 1.1; // Why it was 2?
+
 			for(unsigned int position = 1; position < sampleCount / 2; ++position) {
-				if(correlation[position] > peakCorrelation && correlation[position] > minimumCorrelation * 2) {
+				if(correlation[position] > peakCorrelation && correlation[position] > minimumCorrelation * correlation_scale) {
 					peakCorrelation = correlation[position];
 					peakPosition = position;
 				}
