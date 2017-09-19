@@ -547,8 +547,8 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 	for(int mode = Dso::MATHMODE_1ADD2; mode < Dso::MATHMODE_COUNT; ++mode)
 		this->modeStrings.append(Dso::mathModeString((Dso::MathMode) mode));
 	
-	this->gainSteps             << 1e-2 << 2e-2 << 5e-2 << 1e-1 << 2e-1 << 5e-1
-			<<  1e0 <<  2e0 <<  5e0;          ///< Voltage steps in V/div
+	this->gainSteps << 1e-2 << 2e-2 << 5e-2 << 1e-1 << 2e-1 << 5e-1
+			        <<  1e0 <<  2e0 <<  5e0 << 10e0 << 20e0 << 50e0;          ///< Voltage steps in V/div
 	for(QList<double>::iterator gain = this->gainSteps.begin(); gain != this->gainSteps.end(); ++gain)
 		this->gainStrings << Helper::valueToString(*gain, Helper::UNIT_VOLTS, 0);
 
