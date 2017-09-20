@@ -159,7 +159,11 @@ void DataAnalyzer::run() {
                 // Update the values from the oscilloscope depending on the attenuation from the probe
                 unsigned long sampleCount = channelData->samples.voltage.sample.size();
                 for (unsigned int position = 0 + initial_position; position < sampleCount; position++) {
-                    channelData->samples.voltage.sample[position] *= this->settings->scope.voltage[channel].probe_gain;
+					/// Adjust for the probe attenuation
+					channelData->samples.voltage.sample[position] += ((double)this->settings->scope.voltage[channel].zero_offset/ 1000);
+
+					channelData->samples.voltage.sample[position] *= this->settings->scope.voltage[channel].probe_gain;
+					/// Adjust the offset of the zero
                 }
 			}
 			// Math channel

@@ -556,7 +556,6 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
     for(QList<double>::iterator probe_gain = this->probeGainSteps.begin(); probe_gain != this->probeGainSteps.end(); ++probe_gain)
         this->probeGainStrings << Helper::valueToString(*probe_gain, Helper::UNIT_TIMES, 0);
 
-	
 	// Initialize elements
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
 		this->miscComboBox.append(new QComboBox());
@@ -564,6 +563,9 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
             this->miscComboBox[channel]->addItems(this->couplingStrings);
             this->probeGainCombobox.append(new QComboBox());
             this->probeGainCombobox[channel]->addItems(this->probeGainStrings);
+            this->zeroOffset.append(new QSpinBox());
+            this->zeroOffset[channel]->setSingleStep(1);
+            this->zeroOffset[channel]->setRange(-100000, +100000);
         }
 		else
 			this->miscComboBox[channel]->addItems(this->modeStrings);
@@ -583,11 +585,13 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 	this->dockLayout->setColumnMinimumWidth(0, 64);
 	this->dockLayout->setColumnStretch(1, 1);
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
-		this->dockLayout->addWidget(this->usedCheckBox[channel], channel * 3, 0);
-		this->dockLayout->addWidget(this->gainComboBox[channel], channel * 3, 1);
-		this->dockLayout->addWidget(this->miscComboBox[channel], channel * 3 + 1, 1);
-        if(channel < (int) this->settings->scope.physicalChannels)
-		    this->dockLayout->addWidget(this->probeGainCombobox[channel], channel * 3 +2, 1);
+		this->dockLayout->addWidget(this->usedCheckBox[channel], channel * 4, 0);
+		this->dockLayout->addWidget(this->gainComboBox[channel], channel * 4, 1);
+		this->dockLayout->addWidget(this->miscComboBox[channel], channel * 4 + 1, 1);
+        if(channel < (int) this->settings->scope.physicalChannels) {
+            this->dockLayout->addWidget(this->probeGainCombobox[channel], channel * 4 + 2, 1);
+            this->dockLayout->addWidget(this->zeroOffset[channel], channel * 4 + 3, 1);
+        }
 	}
 
 	this->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -601,8 +605,11 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 		connect(this->gainComboBox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(gainSelected(int)));
 		connect(this->miscComboBox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(miscSelected(int)));
 		connect(this->usedCheckBox[channel], SIGNAL(toggled(bool)), this, SLOT(usedSwitched(bool)));
-        if(channel < (int) this->settings->scope.physicalChannels)
-		    connect(this->probeGainCombobox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(probeGainSelected(int)));
+
+        if(channel < (int) this->settings->scope.physicalChannels) {
+            connect(this->probeGainCombobox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(probeGainSelected(int)));
+            connect(this->zeroOffset[channel], SIGNAL(valueChanged(int)), this, SLOT(zeroOffsetChanged(int)));
+        }
 	}
 	
 	// Set values
@@ -610,6 +617,7 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 		if(channel < (int) this->settings->scope.physicalChannels) {
             this->setCoupling(channel, (Dso::Coupling) this->settings->scope.voltage[channel].misc);
             this->setProbeGain(channel, this->settings->scope.voltage[channel].probe_gain);
+            this->setZeroOffset(channel, this->settings->scope.voltage[channel].zero_offset);
         }
         else
 			this->setMode((Dso::MathMode) this->settings->scope.voltage[channel].misc);
@@ -673,6 +681,15 @@ int VoltageDock::setProbeGain(int channel, double probeGain) {
         this->probeGainCombobox[channel]->setCurrentIndex(index);
 
     return index;
+}
+
+
+int VoltageDock::setZeroOffset(int channel, int zeroOffset){
+    if(channel < 0 || channel >= this->settings->scope.voltage.count())
+        return -1;
+
+    this->zeroOffset[channel]->setValue(zeroOffset);
+    return zeroOffset;
 }
 
 /// \brief Sets the mode for the math channel.
@@ -769,3 +786,18 @@ void VoltageDock::probeGainSelected(int index) {
 	}
 
 };
+
+
+void VoltageDock::zeroOffsetChanged(int value) {
+    int channel;
+
+    // Which checkbox was it?
+    for(channel = 0; channel < this->settings->scope.voltage.count(); ++channel)
+        if(this->sender() == this->zeroOffset[channel])
+            break;
+    if(channel < this->settings->scope.voltage.count()){
+        this->settings->scope.voltage[channel].zero_offset = value;
+    }
+
+}
+
