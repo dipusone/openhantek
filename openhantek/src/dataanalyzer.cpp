@@ -160,10 +160,11 @@ void DataAnalyzer::run() {
                 unsigned long sampleCount = channelData->samples.voltage.sample.size();
                 for (unsigned int position = 0 + initial_position; position < sampleCount; position++) {
 					/// Adjust for the probe attenuation
-					channelData->samples.voltage.sample[position] += ((double)this->settings->scope.voltage[channel].zero_offset/ 1000);
-
 					channelData->samples.voltage.sample[position] *= this->settings->scope.voltage[channel].probe_gain;
 					/// Adjust the offset of the zero
+                    double zero_offset =  ((double)this->settings->scope.voltage[channel].zero_offset/ 1000);
+                    channelData->samples.voltage.sample[position] += zero_offset;
+
                 }
 			}
 			// Math channel
@@ -355,8 +356,10 @@ void DataAnalyzer::run() {
 				else if(channelData->samples.voltage.sample[position] > maximalVoltage)
 					maximalVoltage = channelData->samples.voltage.sample[position];
 			}
-			channelData->amplitude = (maximalVoltage - minimalVoltage) ;
-			
+            // FIXME changed only for debug
+//			channelData->amplitude = (maximalVoltage - minimalVoltage) ;
+			channelData->amplitude = maximalVoltage ;
+
 			// Get the frequency from the correlation results
 			double minimumCorrelation = correlation[0];
 			double peakCorrelation = 0;

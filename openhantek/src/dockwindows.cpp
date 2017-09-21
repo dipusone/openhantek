@@ -564,6 +564,7 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
             this->probeGainCombobox.append(new QComboBox());
             this->probeGainCombobox[channel]->addItems(this->probeGainStrings);
             this->zeroOffset.append(new QSpinBox());
+            this->zeroOffset[channel]->setSuffix(tr(" mv"));
             this->zeroOffset[channel]->setSingleStep(1);
             this->zeroOffset[channel]->setRange(-100000, +100000);
         }
