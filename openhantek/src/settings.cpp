@@ -115,6 +115,9 @@ DsoSettings::~DsoSettings() {
 void DsoSettings::setChannelCount(unsigned int channels) {
 	this->scope.physicalChannels = channels;
 	// Always put the math channel at the end of the list
+	// TODO Not sure about this placement
+	QList<double> gainSteps;
+	gainSteps << 1e-2 << 2e-2 << 5e-2 << 1e-1 << 2e-1 << 5e-1 <<  1e0 <<  2e0 <<  5e0;
 	
 	// Remove list items for removed channels
 	for(int channel = this->scope.spectrum.count() - 2; channel >= (int) channels; channel--)
@@ -147,6 +150,10 @@ void DsoSettings::setChannelCount(unsigned int channels) {
 			newVoltage.name = QApplication::tr("CH%1").arg(channel + 1);
 			newVoltage.offset = 0.0;
 			newVoltage.zero_offset = 0;
+
+			for(QList<double>::iterator gain = gainSteps.begin(); gain != gainSteps.end(); ++gain){
+				newVoltage.zeroOfsets.insert(*gain,0.0);
+			}
 			newVoltage.trigger = 0.0;
 			newVoltage.used = false;
 			this->scope.voltage.insert(channel, newVoltage);
@@ -183,6 +190,9 @@ void DsoSettings::setChannelCount(unsigned int channels) {
 		newVoltage.name = QApplication::tr("MATH");
 		newVoltage.offset = 0.0;
 		newVoltage.zero_offset = 0;
+		for(QList<double>::iterator gain = gainSteps.begin(); gain != gainSteps.end(); ++gain){
+			newVoltage.zeroOfsets.insert(*gain,0.0);
+		}
 		newVoltage.trigger = 0.0;
 		newVoltage.used = false;
 		this->scope.voltage.append(newVoltage);

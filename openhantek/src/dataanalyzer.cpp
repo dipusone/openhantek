@@ -162,7 +162,8 @@ void DataAnalyzer::run() {
 					/// Adjust for the probe attenuation
 					channelData->samples.voltage.sample[position] *= this->settings->scope.voltage[channel].probe_gain;
 					/// Adjust the offset of the zero
-                    double zero_offset =  ((double)this->settings->scope.voltage[channel].zero_offset/ 1000);
+                    double voltageGain = this->settings->scope.voltage[channel].gain;
+                    double zero_offset =  ((double)this->settings->scope.voltage[channel].zeroOfsets[voltageGain]/1000);
                     channelData->samples.voltage.sample[position] += zero_offset;
 
                 }

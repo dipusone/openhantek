@@ -797,7 +797,8 @@ void VoltageDock::zeroOffsetChanged(int value) {
         if(this->sender() == this->zeroOffset[channel])
             break;
     if(channel < this->settings->scope.voltage.count()){
-        this->settings->scope.voltage[channel].zero_offset = value;
+        double voltageGain = this->settings->scope.voltage[channel].gain;
+        this->settings->scope.voltage[channel].zeroOfsets[voltageGain] = value;
     }
 
 }
