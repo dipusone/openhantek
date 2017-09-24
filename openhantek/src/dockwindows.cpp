@@ -563,9 +563,9 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
             this->miscComboBox[channel]->addItems(this->couplingStrings);
             this->probeGainCombobox.append(new QComboBox());
             this->probeGainCombobox[channel]->addItems(this->probeGainStrings);
-            this->zeroOffset.append(new QSpinBox());
+            this->zeroOffset.append(new QDoubleSpinBox());
             this->zeroOffset[channel]->setSuffix(tr(" mv"));
-            this->zeroOffset[channel]->setSingleStep(1);
+            this->zeroOffset[channel]->setSingleStep(0.1);
             this->zeroOffset[channel]->setRange(-100000, +100000);
         }
 		else
@@ -609,7 +609,7 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 
         if(channel < (int) this->settings->scope.physicalChannels) {
             connect(this->probeGainCombobox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(probeGainSelected(int)));
-            connect(this->zeroOffset[channel], SIGNAL(valueChanged(int)), this, SLOT(zeroOffsetChanged(int)));
+            connect(this->zeroOffset[channel], SIGNAL(valueChanged(double)), this, SLOT(zeroOffsetChanged(double)));
         }
 	}
 	
@@ -618,7 +618,8 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 		if(channel < (int) this->settings->scope.physicalChannels) {
             this->setCoupling(channel, (Dso::Coupling) this->settings->scope.voltage[channel].misc);
             this->setProbeGain(channel, this->settings->scope.voltage[channel].probe_gain);
-            this->setZeroOffset(channel, this->settings->scope.voltage[channel].zero_offset);
+            this->setZeroOffset(channel, this->settings->scope.voltage[channel].zeroOfsets[
+                    this->settings->scope.voltage[channel].gain]);
         }
         else
 			this->setMode((Dso::MathMode) this->settings->scope.voltage[channel].misc);
@@ -685,7 +686,7 @@ int VoltageDock::setProbeGain(int channel, double probeGain) {
 }
 
 
-int VoltageDock::setZeroOffset(int channel, int zeroOffset){
+double VoltageDock::setZeroOffset(int channel, double zeroOffset){
     if(channel < 0 || channel >= this->settings->scope.voltage.count())
         return -1;
 
@@ -731,6 +732,9 @@ void VoltageDock::gainSelected(int index) {
 	// Send signal if it was one of the comboboxes
 	if(channel < this->settings->scope.voltage.count()) {
 		this->settings->scope.voltage[channel].gain = this->gainSteps.at(index);
+        double voltageGain = this->settings->scope.voltage[channel].gain;
+        //  Update the offset label
+        this->zeroOffset[channel]->setValue(this->settings->scope.voltage[channel].zeroOfsets[voltageGain]);
 		
 		emit gainChanged(channel, this->settings->scope.voltage[channel].gain);
 	}
@@ -790,7 +794,7 @@ void VoltageDock::probeGainSelected(int index) {
 };
 
 
-void VoltageDock::zeroOffsetChanged(int value) {
+void VoltageDock::zeroOffsetChanged(double value) {
     int channel;
 
     // Which checkbox was it?

@@ -164,7 +164,7 @@ class VoltageDock : public QDockWidget {
 		int setCoupling(int channel, Dso::Coupling coupling);
 		int setGain(int channel, double gain);
         int setProbeGain(int channel, double probeGain);
-        int setZeroOffset(int channel, int zeroOffset);
+        double setZeroOffset(int channel, double zeroOffset);
 		int setMode(Dso::MathMode mode);
 		int setUsed(int channel, bool used);
 	
@@ -184,7 +184,7 @@ class VoltageDock : public QDockWidget {
 		QStringList modeStrings; ///< The strings for the math mode
 		QList<double> gainSteps; ///< The selectable gain steps
         QList<double> probeGainSteps;
-        QList<QSpinBox *> zeroOffset;
+        QList<QDoubleSpinBox *> zeroOffset;
         QStringList probeGainStrings;
 		QStringList gainStrings; ///< String representations for the gain steps
 	
@@ -193,7 +193,7 @@ class VoltageDock : public QDockWidget {
 		void miscSelected(int index);
 		void usedSwitched(bool checked);
 		void probeGainSelected(int index);
-        void zeroOffsetChanged(int value);
+        void zeroOffsetChanged(double value);
 	
 	signals:
 		void couplingChanged(unsigned int channel, Dso::Coupling coupling); ///< A coupling has been selected

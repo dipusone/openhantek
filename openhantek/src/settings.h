@@ -131,7 +131,6 @@ struct DsoSettingsScopeVoltage {
     double probe_gain; ///< Probe gain as for example x10, etc..
 	QString name; ///< Name of this channel
 	double offset; ///< Vertical offset in divs
-    int zero_offset; ///< Calibration offset
     QHash<double, double> zeroOfsets; ///< Calibration offset table for different divs
 	double trigger; ///< Trigger level in V
 	bool used; ///< true if this channel is enabled

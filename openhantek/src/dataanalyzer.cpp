@@ -357,9 +357,9 @@ void DataAnalyzer::run() {
 				else if(channelData->samples.voltage.sample[position] > maximalVoltage)
 					maximalVoltage = channelData->samples.voltage.sample[position];
 			}
-            // FIXME changed only for debug
-//			channelData->amplitude = (maximalVoltage - minimalVoltage) ;
-			channelData->amplitude = maximalVoltage ;
+
+			channelData->amplitude = (maximalVoltage - minimalVoltage) ;
+
 
 			// Get the frequency from the correlation results
 			double minimumCorrelation = correlation[0];

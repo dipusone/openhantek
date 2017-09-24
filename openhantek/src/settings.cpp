@@ -149,7 +149,6 @@ void DsoSettings::setChannelCount(unsigned int channels) {
 			newVoltage.misc = Dso::COUPLING_DC;
 			newVoltage.name = QApplication::tr("CH%1").arg(channel + 1);
 			newVoltage.offset = 0.0;
-			newVoltage.zero_offset = 0;
 
 			for(QList<double>::iterator gain = gainSteps.begin(); gain != gainSteps.end(); ++gain){
 				newVoltage.zeroOfsets.insert(*gain,0.0);
@@ -189,9 +188,8 @@ void DsoSettings::setChannelCount(unsigned int channels) {
 		newVoltage.misc = Dso::MATHMODE_1ADD2;
 		newVoltage.name = QApplication::tr("MATH");
 		newVoltage.offset = 0.0;
-		newVoltage.zero_offset = 0;
 		for(QList<double>::iterator gain = gainSteps.begin(); gain != gainSteps.end(); ++gain){
-			newVoltage.zeroOfsets.insert(*gain,0.0);
+			newVoltage.zeroOfsets.insert(*gain, 0.0);
 		}
 		newVoltage.trigger = 0.0;
 		newVoltage.used = false;
@@ -324,6 +322,9 @@ int DsoSettings::load(const QString &fileName) {
 			this->scope.spectrum[channel].used = settingsLoader->value("used").toBool();
 		settingsLoader->endGroup();
 	}
+    // TODO Not sure about this placement
+    QList<double> gainSteps;
+    gainSteps << 1e-2 << 2e-2 << 5e-2 << 1e-1 << 2e-1 << 5e-1 <<  1e0 <<  2e0 <<  5e0;
 	// Vertical axis
 	for(int channel = 0; channel < this->scope.voltage.count(); ++channel) {
 		settingsLoader->beginGroup(QString("vertical%1").arg(channel));
@@ -335,8 +336,12 @@ int DsoSettings::load(const QString &fileName) {
 			this->scope.voltage[channel].misc = settingsLoader->value("misc").toInt();
 		if(settingsLoader->contains("offset"))
 			this->scope.voltage[channel].offset = settingsLoader->value("offset").toDouble();
-		if(settingsLoader->contains("zeroOffset"))
-			this->scope.voltage[channel].zero_offset = settingsLoader->value("zeroOffset").toDouble();
+
+        for(QList<double>::iterator gain = gainSteps.begin(); gain != gainSteps.end(); ++gain){
+            QString value = QString("offset%1").arg(*gain);
+            if(settingsLoader->contains(value))
+                this->scope.voltage[channel].zeroOfsets[*gain] = settingsLoader->value(value).toDouble();
+        }
 		if(settingsLoader->contains("trigger"))
 			this->scope.voltage[channel].trigger = settingsLoader->value("trigger").toDouble();
 		if(settingsLoader->contains("used"))
@@ -496,12 +501,18 @@ int DsoSettings::save(const QString &fileName) {
 		settingsSaver->endGroup();
 	}
 	// Vertical axis
+    // TODO Not sure about this placement
+    QList<double> gainSteps;
+    gainSteps << 1e-2 << 2e-2 << 5e-2 << 1e-1 << 2e-1 << 5e-1 <<  1e0 <<  2e0 <<  5e0;
+
 	for(int channel = 0; channel < this->scope.voltage.count(); ++channel) {
 		settingsSaver->beginGroup(QString("vertical%1").arg(channel));
 		settingsSaver->setValue("gain", this->scope.voltage[channel].gain);
 		settingsSaver->setValue("probeGain", this->scope.voltage[channel].probe_gain);
-		settingsSaver->setValue("zeroOffset", this->scope.voltage[channel].zero_offset);
 		settingsSaver->setValue("misc", this->scope.voltage[channel].misc);
+        for(QList<double>::iterator gain = gainSteps.begin(); gain != gainSteps.end(); ++gain){
+            settingsSaver->setValue(QString("offset%1").arg(*gain), this->scope.voltage[channel].zeroOfsets[*gain]);
+        }
 		settingsSaver->setValue("offset", this->scope.voltage[channel].offset);
 		settingsSaver->setValue("trigger", this->scope.voltage[channel].trigger);
 		settingsSaver->setValue("used", this->scope.voltage[channel].used);
