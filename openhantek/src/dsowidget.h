@@ -115,6 +115,7 @@ class DsoWidget : public QWidget {
 		void updateVoltageGain(unsigned int channel);
 		void updateVoltageUsed(unsigned int channel, bool used);
 		void updateProbeGain(unsigned int channel);
+		void updateZeroOffset(unsigned int channel);
 
 
 	// Menus

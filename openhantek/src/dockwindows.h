@@ -199,6 +199,7 @@ class VoltageDock : public QDockWidget {
 		void couplingChanged(unsigned int channel, Dso::Coupling coupling); ///< A coupling has been selected
 		void gainChanged(unsigned int channel, double gain); ///< A gain has been selected
 		void probeGainChanged(unsigned int channel, int probeGain); ///< A probe gain has been selected
+		void zeroOffsetChanged(unsigned int channel, double offset);
 		void modeChanged(Dso::MathMode mode); ///< The mode for the math channels has been changed
 		void usedChanged(unsigned int channel, bool used); ///< A channel has been enabled/disabled
 		void probeGainChanged(unsigned int channel, double gain);

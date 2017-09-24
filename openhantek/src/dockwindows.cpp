@@ -794,6 +794,8 @@ void VoltageDock::probeGainSelected(int index) {
 };
 
 
+/// \brief Called when the zero offset spinbox changes it's value.
+/// \param value The value of the spin box item.
 void VoltageDock::zeroOffsetChanged(double value) {
     int channel;
 
@@ -804,6 +806,7 @@ void VoltageDock::zeroOffsetChanged(double value) {
     if(channel < this->settings->scope.voltage.count()){
         double voltageGain = this->settings->scope.voltage[channel].gain;
         this->settings->scope.voltage[channel].zeroOfsets[voltageGain] = value;
+		emit zeroOffsetChanged(channel, this->settings->scope.voltage[channel].zeroOfsets[voltageGain]);
     }
 
 }
