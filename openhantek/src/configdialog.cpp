@@ -60,11 +60,13 @@ DsoConfigDialog::DsoConfigDialog(DsoSettings *settings, QWidget *parent, Qt::Win
 	this->colorsPage = new DsoConfigColorsPage(this->settings);
 	this->filesPage = new DsoConfigFilesPage(this->settings);
 	this->scopePage = new DsoConfigScopePage(this->settings);
+	this->probePage = new DsoConfigProbePage(this->settings);
 	this->pagesWidget = new QStackedWidget;
 	this->pagesWidget->addWidget(this->analysisPage);
 	this->pagesWidget->addWidget(this->colorsPage);
 	this->pagesWidget->addWidget(this->filesPage);
 	this->pagesWidget->addWidget(this->scopePage);
+    this->pagesWidget->addWidget(this->probePage);
 	
 	this->acceptButton = new QPushButton(tr("&Ok"));
 	this->acceptButton->setDefault(true);
@@ -118,8 +120,13 @@ void DsoConfigDialog::createIcons() {
 	QListWidgetItem *scopeButton = new QListWidgetItem(contentsWidget);
 	scopeButton->setIcon(QIcon(":config/scope.png"));
 	scopeButton->setText(tr("Scope"));
-	
-	connect(contentsWidget, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(changePage(QListWidgetItem *, QListWidgetItem *)));
+
+    QListWidgetItem *probeButton = new QListWidgetItem(contentsWidget);
+    probeButton->setIcon(QIcon(":config/scope.png"));
+    probeButton->setText(tr("Probes"));
+
+
+    connect(contentsWidget, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(changePage(QListWidgetItem *, QListWidgetItem *)));
 }
 
 /// \brief Saves the settings and closes the dialog.
@@ -135,6 +142,7 @@ void DsoConfigDialog::apply() {
 	this->colorsPage->saveSettings();
 	this->filesPage->saveSettings();
 	this->scopePage->saveSettings();
+	this->probePage->saveSettings();
 }
 
 /// \brief Change the config page.

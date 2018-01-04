@@ -50,6 +50,7 @@ class DsoConfigAnalysisPage;
 class DsoConfigColorsPage;
 class DsoConfigFilesPage;
 class DsoConfigScopePage;
+class DsoConfigProbePage;
 class DsoSettings;
 
 class QHBoxLayout;
@@ -92,6 +93,7 @@ class DsoConfigDialog : public QDialog {
 		DsoConfigColorsPage *colorsPage;
 		DsoConfigFilesPage *filesPage;
 		DsoConfigScopePage *scopePage;
+		DsoConfigProbePage *probePage;
 		
 		QPushButton *acceptButton, *applyButton, *rejectButton;
 };

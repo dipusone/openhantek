@@ -85,8 +85,26 @@ DsoConfigProbePage::~DsoConfigProbePage() {
 void DsoConfigProbePage::saveSettings() {
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
         if(channel < (int) this->settings->scope.physicalChannels) {
-            std::cout << "Probe list " << this->probeAttenuations[channel]->text().toLatin1().data() << std::endl;
-            //%s", this->probeAttenuations[channel]->text().toLatin1().data()
+			// Clear the list
+			this->settings->scope.voltage[channel].probeGainSteps.clear();
+			QStringList values = this->probeAttenuations[channel]->text().split(',');
+			// Try to convert the values in booleans and save them the the array
+			for(int idx=0; idx < values.size(); idx ++){
+				bool correct;
+				double attenuation = values[idx].toDouble(&correct);
+				if(correct) {
+                    this->settings->scope.voltage[channel].probeGainSteps << attenuation;
+				}
+			}
+			// Try to have a fallback solution in the case of non valid settings
+			if(this->settings->scope.voltage[channel].probeGainSteps.empty()){
+				this->settings->scope.voltage[channel].probeGainSteps <<  1e0 <<  2e0 <<  5e0 << 10e0;
+			}
+            std::cout << "Probe list " ;
+            for (double probeGainStep : this->settings->scope.voltage[channel].probeGainSteps) {
+                std::cout << probeGainStep<< ", ";
+            }
+            std::cout << std::endl;
         }
 	}
 

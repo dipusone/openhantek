@@ -42,6 +42,32 @@ class QSpinBox;
 class QStringList;
 class QLabel;
 
+////////////////////////////////////////////////////////////////////////////////
+/// \class DsoConfigProbePage                                 configpages.h
+/// \brief Config page for the probes.
+class DsoConfigProbePage: public QWidget{
+    Q_OBJECT
+
+    public:
+    DsoConfigProbePage(DsoSettings *settings, QWidget *parent = 0);
+    ~DsoConfigProbePage();
+
+    public slots:
+        void saveSettings();
+
+
+private:
+		QList<QLabel *> probeLabel;
+		QList<QLineEdit*> probeAttenuations;
+        DsoSettings *settings;
+
+
+    QGridLayout *probeLayout;
+    QLabel *probeAttenuationLabel;
+    QVBoxLayout *mainLayout;
+    QGroupBox *probeGroup;
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \class DsoConfigAnalysisPage                                   configpages.h
