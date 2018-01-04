@@ -30,6 +30,7 @@
 #include <QLabel>
 #include <QSpinBox>
 #include <QVBoxLayout>
+#include <iostream>
 
 
 #include "configpages.h"
@@ -37,6 +38,59 @@
 #include "colorbox.h"
 #include "settings.h"
 
+DsoConfigProbePage::DsoConfigProbePage(DsoSettings *settings, QWidget *parent ): QWidget(parent){
+	this->settings = settings;
+
+    this->probeLayout = new QGridLayout();
+
+	//Add the labels for each channel
+	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
+        if(channel < (int) this->settings->scope.physicalChannels) {
+		    this->probeLabel.append(new QLabel(QApplication::tr("Probe %L1").arg(channel)));
+        }
+	}
+
+	//Add the labels for each channel
+	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
+		if(channel < (int) this->settings->scope.physicalChannels) {
+			this->probeLabel.append(new QLabel(QApplication::tr("Probe %L1").arg(channel)));
+			this->probeAttenuations.append(new QLineEdit("1,2,3"));
+		}
+
+	}
+
+	//add the widgets the layout
+	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
+        if(channel < (int) this->settings->scope.physicalChannels) {
+            this->probeLayout->addWidget(this->probeLabel[channel]);
+			this->probeLayout->addWidget(this->probeAttenuations[channel]);
+        }
+	}
+
+	this->probeGroup = new QGroupBox(tr("Probe Attenuation"));
+    this->probeGroup->setLayout(this->probeLayout);
+
+	this->mainLayout = new QVBoxLayout();
+	this->mainLayout->addWidget(this->probeGroup);
+    this->mainLayout->addStretch(1);
+	this->setLayout(this->mainLayout);
+
+
+}
+
+DsoConfigProbePage::~DsoConfigProbePage() {
+
+}
+
+void DsoConfigProbePage::saveSettings() {
+	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
+        if(channel < (int) this->settings->scope.physicalChannels) {
+            std::cout << "Probe list " << this->probeAttenuations[channel]->text().toLatin1().data() << std::endl;
+            //%s", this->probeAttenuations[channel]->text().toLatin1().data()
+        }
+	}
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // class DsoConfigAnalysisPage
