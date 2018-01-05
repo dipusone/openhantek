@@ -668,7 +668,7 @@ int VoltageDock::setProbeGain(int channel, double probeGain) {
     if(channel < 0 || channel >= this->settings->scope.voltage.count())
         return -1;
 
-    int index = this->probeGainSteps.indexOf(probeGain);
+    int index = this->settings->scope.voltage[channel].probeGainSteps.indexOf(probeGain);
     if(index != -1)
         this->probeGainCombobox[channel]->setCurrentIndex(index);
 
@@ -765,7 +765,7 @@ void VoltageDock::probeGainSelected(int index) {
 		if(this->sender() == this->probeGainCombobox[channel])
 			break;
 	if(channel < this->settings->scope.voltage.count()){
-		this->settings->scope.voltage[channel].probe_gain = this->probeGainSteps.at(index);
+		this->settings->scope.voltage[channel].probe_gain = this->settings->scope.voltage[channel].probeGainSteps.at(index);
         emit probeGainChanged(channel, this->settings->scope.voltage[channel].probe_gain);
 	}
 
