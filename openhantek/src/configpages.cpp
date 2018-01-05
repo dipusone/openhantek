@@ -48,14 +48,7 @@ DsoConfigProbePage::DsoConfigProbePage(DsoSettings *settings, QWidget *parent ):
 	this->settings = settings;
 
     this->probeLayout = new QGridLayout();
-
-	//Add the labels for each channel
-	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
-        if(channel < (int) this->settings->scope.physicalChannels) {
-		    this->probeLabel.append(new QLabel(QApplication::tr("Probe %L1").arg(channel)));
-        }
-	}
-
+	
 	//Add the labels for each channel
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
 		if(channel < (int) this->settings->scope.physicalChannels) {
