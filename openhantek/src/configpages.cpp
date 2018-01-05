@@ -38,6 +38,12 @@
 #include "colorbox.h"
 #include "settings.h"
 
+
+////////////////////////////////////////////////////////////////////////////////
+// class DsoConfigProbePage
+/// \brief Creates the widgets and sets their initial value.
+/// \param settings The target settings object.
+/// \param parent The parent widget.
 DsoConfigProbePage::DsoConfigProbePage(DsoSettings *settings, QWidget *parent ): QWidget(parent){
 	this->settings = settings;
 
@@ -87,10 +93,12 @@ DsoConfigProbePage::DsoConfigProbePage(DsoSettings *settings, QWidget *parent ):
 
 }
 
+/// \brief Cleans up the widget.
 DsoConfigProbePage::~DsoConfigProbePage() {
 
 }
 
+/// \brief Saves the new settings.
 void DsoConfigProbePage::saveSettings() {
 	//TODO find a way to refresh a widget
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {

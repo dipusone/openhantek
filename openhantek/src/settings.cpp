@@ -67,6 +67,7 @@ DsoSettings::DsoSettings(QWidget *parent) : QObject(parent) {
 	this->scope.horizontal.recordLength = 0;
 	this->scope.horizontal.samplerate = 1e6;
 	this->scope.horizontal.samplerateSet = false;
+    // Qvariant for the list of probe settings
 	qRegisterMetaTypeStreamOperators<QList<double> >("QList<double>");
 	// Trigger
 	this->scope.trigger.filter = true;
@@ -322,7 +323,6 @@ int DsoSettings::load(const QString &fileName) {
 		if(settingsLoader->contains("probeGainSteps")) {
 
 			QList<double> gains = QVariant(settingsLoader->value("probeGainSteps")).value<QList<double>>();
-			int len = gains.size();
 			for(double v: gains){
 					this->scope.voltage[channel].probeGainSteps.append(v);
 			}

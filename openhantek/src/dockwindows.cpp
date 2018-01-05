@@ -758,7 +758,7 @@ void VoltageDock::usedSwitched(bool checked) {
 	}
 }
 
-/// \brief Calld when the probe combo box changes it's value.
+/// \brief Called when the probe combo box changes its value.
 /// \param index The index of the combo box item.
 void VoltageDock::probeGainSelected(int index) {
 	int channel;
