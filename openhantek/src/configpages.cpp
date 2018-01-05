@@ -48,7 +48,7 @@ DsoConfigProbePage::DsoConfigProbePage(DsoSettings *settings, QWidget *parent ):
 	this->settings = settings;
 
     this->probeLayout = new QGridLayout();
-	
+
 	//Add the labels for each channel
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
 		if(channel < (int) this->settings->scope.physicalChannels) {
@@ -62,9 +62,7 @@ DsoConfigProbePage::DsoConfigProbePage(DsoSettings *settings, QWidget *parent ):
 				}
 			}
 			this->probeAttenuations.append(new QLineEdit(values));
-
 		}
-
 	}
 
 	//add the widgets the layout
@@ -111,11 +109,6 @@ void DsoConfigProbePage::saveSettings() {
 			if(this->settings->scope.voltage[channel].probeGainSteps.empty()){
 				this->settings->scope.voltage[channel].probeGainSteps <<  1e0 <<  2e0 <<  5e0 << 10e0;
 			}
-            std::cout << "Probe list (" << channel << ")" ;
-            for (double probeGainStep : this->settings->scope.voltage[channel].probeGainSteps) {
-                std::cout << probeGainStep<< ", ";
-            }
-            std::cout << std::endl;
         }
 	}
 }
