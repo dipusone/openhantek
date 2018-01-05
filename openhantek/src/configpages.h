@@ -60,12 +60,9 @@ private:
 		QList<QLabel *> probeLabel;
 		QList<QLineEdit*> probeAttenuations;
         DsoSettings *settings;
-
-
-    QGridLayout *probeLayout;
-    QLabel *probeAttenuationLabel;
-    QVBoxLayout *mainLayout;
-    QGroupBox *probeGroup;
+        QGridLayout *probeLayout;
+        QVBoxLayout *mainLayout;
+        QGroupBox *probeGroup;
 };
 
 

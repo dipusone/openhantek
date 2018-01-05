@@ -327,7 +327,6 @@ int DsoSettings::load(const QString &fileName) {
 					this->scope.voltage[channel].probeGainSteps.append(v);
 			}
 		}
-		//settingsLoader->endGroup();
 		if(this->scope.voltage[channel].probeGainSteps.empty()) {
 			this->scope.voltage[channel].probeGainSteps << 1e0 << 2e0 << 5e0 << 10e0;
 		}
@@ -420,7 +419,7 @@ int DsoSettings::save(const QString &fileName) {
 		settingsSaver = new QSettings(fileName, QSettings::IniFormat, this);
 	if(settingsSaver->status() != QSettings::NoError)
 		return -settingsSaver->status();
-	qDebug() << settingsSaver->fileName();
+
 	if(complete) {
 		// Main window layout and other general options
 		settingsSaver->beginGroup("options");
