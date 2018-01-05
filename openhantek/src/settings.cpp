@@ -67,6 +67,7 @@ DsoSettings::DsoSettings(QWidget *parent) : QObject(parent) {
 	this->scope.horizontal.recordLength = 0;
 	this->scope.horizontal.samplerate = 1e6;
 	this->scope.horizontal.samplerateSet = false;
+	qRegisterMetaTypeStreamOperators<QList<double> >("QList<double>");
 	// Trigger
 	this->scope.trigger.filter = true;
 	this->scope.trigger.mode = Dso::TRIGGERMODE_NORMAL;
@@ -317,6 +318,19 @@ int DsoSettings::load(const QString &fileName) {
 		settingsLoader->beginGroup(QString("vertical%1").arg(channel));
 		if(settingsLoader->contains("gain"))
 			this->scope.voltage[channel].gain = settingsLoader->value("gain").toDouble();
+
+		if(settingsLoader->contains("probeGainSteps")) {
+
+			QList<double> gains = QVariant(settingsLoader->value("probeGainSteps")).value<QList<double>>();
+			int len = gains.size();
+			for(double v: gains){
+					this->scope.voltage[channel].probeGainSteps.append(v);
+			}
+		}
+		//settingsLoader->endGroup();
+		if(this->scope.voltage[channel].probeGainSteps.empty()) {
+			this->scope.voltage[channel].probeGainSteps << 1e0 << 2e0 << 5e0 << 10e0;
+		}
 		if(settingsLoader->contains("probeGain"))
 			this->scope.voltage[channel].probe_gain = settingsLoader->value("probeGain").toDouble();
 		if(settingsLoader->contains("misc"))
@@ -406,7 +420,7 @@ int DsoSettings::save(const QString &fileName) {
 		settingsSaver = new QSettings(fileName, QSettings::IniFormat, this);
 	if(settingsSaver->status() != QSettings::NoError)
 		return -settingsSaver->status();
-
+	qDebug() << settingsSaver->fileName();
 	if(complete) {
 		// Main window layout and other general options
 		settingsSaver->beginGroup("options");
@@ -485,6 +499,7 @@ int DsoSettings::save(const QString &fileName) {
 	for(int channel = 0; channel < this->scope.voltage.count(); ++channel) {
 		settingsSaver->beginGroup(QString("vertical%1").arg(channel));
 		settingsSaver->setValue("gain", this->scope.voltage[channel].gain);
+		settingsSaver->setValue("probeGainSteps", QVariant::fromValue(this->scope.voltage[channel].probeGainSteps));
 		settingsSaver->setValue("probeGain", this->scope.voltage[channel].probe_gain);
 		settingsSaver->setValue("misc", this->scope.voltage[channel].misc);
 		settingsSaver->setValue("offset", this->scope.voltage[channel].offset);

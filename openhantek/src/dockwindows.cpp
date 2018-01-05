@@ -552,9 +552,9 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 	for(QList<double>::iterator gain = this->gainSteps.begin(); gain != this->gainSteps.end(); ++gain)
 		this->gainStrings << Helper::valueToString(*gain, Helper::UNIT_VOLTS, 0);
 
-    this->probeGainSteps <<  1e0 <<  2e0 <<  5e0 << 10e0; ///< Probe gain as multiplier
-    for(QList<double>::iterator probe_gain = this->probeGainSteps.begin(); probe_gain != this->probeGainSteps.end(); ++probe_gain)
-        this->probeGainStrings << Helper::valueToString(*probe_gain, Helper::UNIT_TIMES, 0);
+
+    for(double probe_gain: this->settings->scope.voltage[0].probeGainSteps)
+        this->probeGainStrings << Helper::valueToString(probe_gain, Helper::UNIT_TIMES, 0);
 
 	
 	// Initialize elements

@@ -54,7 +54,15 @@ DsoConfigProbePage::DsoConfigProbePage(DsoSettings *settings, QWidget *parent ):
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
 		if(channel < (int) this->settings->scope.physicalChannels) {
 			this->probeLabel.append(new QLabel(QApplication::tr("Probe %L1").arg(channel)));
-			this->probeAttenuations.append(new QLineEdit("1,2,3"));
+			QString values;
+			for(int idx=0; idx < this->settings->scope.voltage[channel].probeGainSteps.size(); idx++){
+				values += QString::number(this->settings->scope.voltage[channel].probeGainSteps[idx]);
+				if(idx != this->settings->scope.voltage[channel].probeGainSteps.size() -1){
+					values += ",";
+				}
+			}
+			this->probeAttenuations.append(new QLineEdit(values));
+
 		}
 
 	}
@@ -100,7 +108,7 @@ void DsoConfigProbePage::saveSettings() {
 			if(this->settings->scope.voltage[channel].probeGainSteps.empty()){
 				this->settings->scope.voltage[channel].probeGainSteps <<  1e0 <<  2e0 <<  5e0 << 10e0;
 			}
-            std::cout << "Probe list " ;
+            std::cout << "Probe list (" << channel << ")" ;
             for (double probeGainStep : this->settings->scope.voltage[channel].probeGainSteps) {
                 std::cout << probeGainStep<< ", ";
             }
