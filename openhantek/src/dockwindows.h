@@ -181,8 +181,6 @@ class VoltageDock : public QDockWidget {
 		QStringList couplingStrings; ///< The strings for the couplings
 		QStringList modeStrings; ///< The strings for the math mode
 		QList<double> gainSteps; ///< The selectable gain steps
-        QList<double> probeGainSteps;
-        QStringList probeGainStrings;
 		QStringList gainStrings; ///< String representations for the gain steps
 	
 	protected slots:

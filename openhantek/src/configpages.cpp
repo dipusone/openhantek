@@ -53,7 +53,8 @@ DsoConfigProbePage::DsoConfigProbePage(DsoSettings *settings, QWidget *parent ):
 	//Add the labels for each channel
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
 		if(channel < (int) this->settings->scope.physicalChannels) {
-			this->probeLabel.append(new QLabel(QApplication::tr("Probe %L1").arg(channel)));
+			this->probeLabel.append(new QLabel(QApplication::tr("Probe Gain for Channel %L1").arg(channel)));
+			// Fast join
 			QString values;
 			for(int idx=0; idx < this->settings->scope.voltage[channel].probeGainSteps.size(); idx++){
 				values += QString::number(this->settings->scope.voltage[channel].probeGainSteps[idx]);
@@ -91,6 +92,7 @@ DsoConfigProbePage::~DsoConfigProbePage() {
 }
 
 void DsoConfigProbePage::saveSettings() {
+	//TODO find a way to refresh a widget
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
         if(channel < (int) this->settings->scope.physicalChannels) {
 			// Clear the list

@@ -553,8 +553,7 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 		this->gainStrings << Helper::valueToString(*gain, Helper::UNIT_VOLTS, 0);
 
 
-    for(double probe_gain: this->settings->scope.voltage[0].probeGainSteps)
-        this->probeGainStrings << Helper::valueToString(probe_gain, Helper::UNIT_TIMES, 0);
+
 
 	
 	// Initialize elements
@@ -563,7 +562,11 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 		if(channel < (int) this->settings->scope.physicalChannels) {
             this->miscComboBox[channel]->addItems(this->couplingStrings);
             this->probeGainCombobox.append(new QComboBox());
-            this->probeGainCombobox[channel]->addItems(this->probeGainStrings);
+			// Add the gain strings
+			QStringList probeGainStrings;
+			for(double probe_gain: this->settings->scope.voltage[channel].probeGainSteps)
+				probeGainStrings << Helper::valueToString(probe_gain, Helper::UNIT_TIMES, 0);
+            this->probeGainCombobox[channel]->addItems(probeGainStrings);
         }
 		else
 			this->miscComboBox[channel]->addItems(this->modeStrings);
