@@ -27,6 +27,7 @@
 #include <QComboBox>
 #include <QDockWidget>
 #include <QLabel>
+#include <iostream>
 
 
 #include "dockwindows.h"
@@ -552,10 +553,6 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 	for(QList<double>::iterator gain = this->gainSteps.begin(); gain != this->gainSteps.end(); ++gain)
 		this->gainStrings << Helper::valueToString(*gain, Helper::UNIT_VOLTS, 0);
 
-    this->probeGainSteps <<  1e0 <<  2e0 <<  5e0 << 10e0; ///< Probe gain as multiplier
-    for(QList<double>::iterator probe_gain = this->probeGainSteps.begin(); probe_gain != this->probeGainSteps.end(); ++probe_gain)
-        this->probeGainStrings << Helper::valueToString(*probe_gain, Helper::UNIT_TIMES, 0);
-
 	
 	// Initialize elements
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
@@ -563,7 +560,11 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 		if(channel < (int) this->settings->scope.physicalChannels) {
             this->miscComboBox[channel]->addItems(this->couplingStrings);
             this->probeGainCombobox.append(new QComboBox());
-            this->probeGainCombobox[channel]->addItems(this->probeGainStrings);
+			// Add the gain strings
+			QStringList probeGainStrings;
+			for(double probe_gain: this->settings->scope.voltage[channel].probeGainSteps)
+				probeGainStrings << Helper::valueToString(probe_gain, Helper::UNIT_TIMES, 0);
+            this->probeGainCombobox[channel]->addItems(probeGainStrings);
         }
 		else
 			this->miscComboBox[channel]->addItems(this->modeStrings);
@@ -601,8 +602,10 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 		connect(this->gainComboBox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(gainSelected(int)));
 		connect(this->miscComboBox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(miscSelected(int)));
 		connect(this->usedCheckBox[channel], SIGNAL(toggled(bool)), this, SLOT(usedSwitched(bool)));
-        if(channel < (int) this->settings->scope.physicalChannels)
-		    connect(this->probeGainCombobox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(probeGainSelected(int)));
+        if(channel < (int) this->settings->scope.physicalChannels) {
+			connect(this->probeGainCombobox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(probeGainSelected(int)));
+		}
+
 	}
 	
 	// Set values
@@ -668,7 +671,7 @@ int VoltageDock::setProbeGain(int channel, double probeGain) {
     if(channel < 0 || channel >= this->settings->scope.voltage.count())
         return -1;
 
-    int index = this->probeGainSteps.indexOf(probeGain);
+    int index = this->settings->scope.voltage[channel].probeGainSteps.indexOf(probeGain);
     if(index != -1)
         this->probeGainCombobox[channel]->setCurrentIndex(index);
 
@@ -755,18 +758,38 @@ void VoltageDock::usedSwitched(bool checked) {
 	}
 }
 
-/// \brief Calld when the probe combo box changes it's value.
+/// \brief Called when the probe combo box changes its value.
 /// \param index The index of the combo box item.
 void VoltageDock::probeGainSelected(int index) {
-	int channel;
+
+    int channel;
+	// This can happen during the update of the combobox
+    if(index < 0)
+        return;
 
 	// Which checkbox was it?
 	for(channel = 0; channel < this->settings->scope.voltage.count(); ++channel)
 		if(this->sender() == this->probeGainCombobox[channel])
 			break;
 	if(channel < this->settings->scope.voltage.count()){
-		this->settings->scope.voltage[channel].probe_gain = this->probeGainSteps.at(index);
+		this->settings->scope.voltage[channel].probe_gain = this->settings->scope.voltage[channel].probeGainSteps.at(index);
         emit probeGainChanged(channel, this->settings->scope.voltage[channel].probe_gain);
 	}
-
 };
+
+/// \brief Called when the probe gain settings are changed
+/// \param index The index of the combo box item.
+void VoltageDock::probeGainSettingsUpdated() {
+
+	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
+        if(channel < (int) this->settings->scope.physicalChannels) {
+			//Remove all the old values
+            this->probeGainCombobox[channel]->clear();
+			// Rebuild the combobox with the new values
+            QStringList probeGainStrings;
+			for(double probe_gain: this->settings->scope.voltage[channel].probeGainSteps)
+				probeGainStrings << Helper::valueToString(probe_gain, Helper::UNIT_TIMES, 0);
+			this->probeGainCombobox[channel]->addItems(probeGainStrings);
+        }
+	}
+}
