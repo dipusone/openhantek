@@ -56,9 +56,9 @@ class DsoConfigProbePage: public QWidget{
         void saveSettings();
 
 
-private:
-		QList<QLabel *> probeLabel;
-		QList<QLineEdit*> probeAttenuations;
+    private:
+        QList<QLabel *> probeLabel;
+        QList<QLineEdit*> probeAttenuations;
         DsoSettings *settings;
         QGridLayout *probeLayout;
         QVBoxLayout *mainLayout;

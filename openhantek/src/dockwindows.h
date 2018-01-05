@@ -165,6 +165,7 @@ class VoltageDock : public QDockWidget {
         int setProbeGain(int channel, double probeGain);
 		int setMode(Dso::MathMode mode);
 		int setUsed(int channel, bool used);
+        void probeGainSettingsUpdated();
 	
 	protected:
 		void closeEvent(QCloseEvent *event);
@@ -188,7 +189,7 @@ class VoltageDock : public QDockWidget {
 		void miscSelected(int index);
 		void usedSwitched(bool checked);
 		void probeGainSelected(int index);
-	
+
 	signals:
 		void couplingChanged(unsigned int channel, Dso::Coupling coupling); ///< A coupling has been selected
 		void gainChanged(unsigned int channel, double gain); ///< A gain has been selected

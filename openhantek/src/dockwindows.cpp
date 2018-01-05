@@ -27,6 +27,7 @@
 #include <QComboBox>
 #include <QDockWidget>
 #include <QLabel>
+#include <iostream>
 
 
 #include "dockwindows.h"
@@ -552,9 +553,6 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 	for(QList<double>::iterator gain = this->gainSteps.begin(); gain != this->gainSteps.end(); ++gain)
 		this->gainStrings << Helper::valueToString(*gain, Helper::UNIT_VOLTS, 0);
 
-
-
-
 	
 	// Initialize elements
 	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
@@ -604,8 +602,10 @@ VoltageDock::VoltageDock(DsoSettings *settings, QWidget *parent, Qt::WindowFlags
 		connect(this->gainComboBox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(gainSelected(int)));
 		connect(this->miscComboBox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(miscSelected(int)));
 		connect(this->usedCheckBox[channel], SIGNAL(toggled(bool)), this, SLOT(usedSwitched(bool)));
-        if(channel < (int) this->settings->scope.physicalChannels)
-		    connect(this->probeGainCombobox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(probeGainSelected(int)));
+        if(channel < (int) this->settings->scope.physicalChannels) {
+			connect(this->probeGainCombobox[channel], SIGNAL(currentIndexChanged(int)), this, SLOT(probeGainSelected(int)));
+		}
+
 	}
 	
 	// Set values
@@ -761,7 +761,11 @@ void VoltageDock::usedSwitched(bool checked) {
 /// \brief Called when the probe combo box changes its value.
 /// \param index The index of the combo box item.
 void VoltageDock::probeGainSelected(int index) {
-	int channel;
+
+    int channel;
+	// This can happen during the update of the combobox
+    if(index < 0)
+        return;
 
 	// Which checkbox was it?
 	for(channel = 0; channel < this->settings->scope.voltage.count(); ++channel)
@@ -771,5 +775,21 @@ void VoltageDock::probeGainSelected(int index) {
 		this->settings->scope.voltage[channel].probe_gain = this->settings->scope.voltage[channel].probeGainSteps.at(index);
         emit probeGainChanged(channel, this->settings->scope.voltage[channel].probe_gain);
 	}
-
 };
+
+/// \brief Called when the probe gain settings are changed
+/// \param index The index of the combo box item.
+void VoltageDock::probeGainSettingsUpdated() {
+
+	for(int channel = 0; channel < this->settings->scope.voltage.count(); ++channel) {
+        if(channel < (int) this->settings->scope.physicalChannels) {
+			//Remove all the old values
+            this->probeGainCombobox[channel]->clear();
+			// Rebuild the combobox with the new values
+            QStringList probeGainStrings;
+			for(double probe_gain: this->settings->scope.voltage[channel].probeGainSteps)
+				probeGainStrings << Helper::valueToString(probe_gain, Helper::UNIT_TIMES, 0);
+			this->probeGainCombobox[channel]->addItems(probeGainStrings);
+        }
+	}
+}

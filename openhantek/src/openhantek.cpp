@@ -482,7 +482,7 @@ void OpenHantekMainWindow::applySettings() {
 		this->move(this->settings->options.window.position);
 	if(!this->settings->options.window.size.isNull())
 		this->resize(this->settings->options.window.size);
-	
+
 	// Docking windows
 	QList<QDockWidget *> docks;
 	docks.append(this->horizontalDock);
@@ -562,6 +562,10 @@ void OpenHantekMainWindow::applySettings() {
 	// Put the docked toolbars into the main window
 	for(int position = 0; position < dockedToolbars.size(); ++position)
 		this->addToolBar(toolbars[dockedToolbars[position]]);
+
+	//Finally update the values for the gain
+	this->voltageDock->probeGainSettingsUpdated();
+
 }
 
 /// \brief Update the window layout in the settings.
